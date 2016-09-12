@@ -1,9 +1,12 @@
+//Julian Frank
+//Self Portrait - Assignment 9.8
 size(500,500);
 background(#ecf0f1);
 
 stroke(#f0bcd8);
 fill(#ebe8f1);
 
+//letters correspond to shapes in notes
 quad(238, 131, 286, 120, 269, 163, 230, 176); //A
 quad(190, 150, 230, 175, 286, 120, 238, 131); //B
 quad(190,150, 175,200, 230,200, 230,176); //C
