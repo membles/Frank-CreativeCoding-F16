@@ -1,3 +1,7 @@
+//Recreation of Sol LeWitt's "Wall Drawing #370" in p5.js
+//Julian Frnak
+//9-29-2016
+
 var thick;
 var numRect;
 function setup() {
