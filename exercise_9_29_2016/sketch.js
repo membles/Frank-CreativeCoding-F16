@@ -8,6 +8,9 @@ function setup() {
 }
 
 function draw() {
+	for(var i = 0; i < 10; i++){ 
+		ellipse(i * 50 + 40,height-20, 15, 15);
+	}
 	/*
 	for(var i = 0; i < 10; i++){ 
 		//ellipse(i * 50 + 40,height/2, 15, 15);
