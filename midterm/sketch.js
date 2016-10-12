@@ -5,8 +5,15 @@ var floorHeight;
 var intro;
 var segment1;
 var movement;
-var pressW, pressA, pressS, pressD;
+var pressW;
+var pressA;
+var pressS;
+var pressD;
+var pressSpace;
 var playerSpd;
+var jumpHeight;
+var jumpBool;
+var floorPosX;
 //var bounce;
 
 function setup() {
@@ -22,16 +29,35 @@ function setup() {
 	pressA = false;
 	pressS = false;
 	pressD = false;
+	pressSpace = false;
 	playerSpd = 3;
+	jumpHeight = 100;
+	jumpBool = false;
+	floorPosX = 0;
 	//bounce = true;
 }
 
 function floorUpdate(){
-	rect(0, floorHeight, width, height/4);
+	rect(0, floorHeight, width*2, height/4);
+}
+
+function jump(){ //fix; can abuse by holding space
+	if(playerPosY > floorHeight - rectSize - jumpHeight){
+		playerPosY -= playerSpd;
+	}
+	else{
+		jumpBool = false;
+	}
+}
+
+function sceneUpdate(){ //change to take advantage of camera(); will make my life eaasier; ALSO check out frameCount
+	if (playerPosX >= width/7){
+		floorPosX -= playerSpd;
+	}
 }
 
 function playerUpdate(){
-	if(playerPosY < floorHeight - rectSize){
+	if(playerPosY < floorHeight - rectSize && !jumpBool){
 		playerPosY += 2;
 	}
 	/*
@@ -52,6 +78,9 @@ function playerUpdate(){
 		}
 		if(pressD == true){
 			playerPosX += playerSpd;
+		}
+		if(pressSpace){
+			jumpBool = true;
 		}
 	}
 	rect(playerPosX, playerPosY, rectSize, rectSize);
@@ -74,26 +103,26 @@ function draw() {
 	fill(20,20,20);
 	playerUpdate();
 	floorUpdate();
+	if(jumpBool){
+		jump();
+	}
 	if(playerPosY == floorHeight - rectSize && intro){
 		finishIntroTrans();
-	}
-	if(pressD == true){
-		println("aghh");
 	}
 }
 
 function keyPressed(){
-	println("keypressed worked");
-	if(key == 'w'){ pressW = true; println("w boy");}
-	if(key == 'a'){ pressA = true; }
-	if(key == 's'){ pressS = true; }
-	if(key == 'd'){ pressD = true; }
+	if(key == 'W'){ pressW = true; }
+	if(key == 'A'){ pressA = true; }
+	if(key == 'S'){ pressS = true; }
+	if(key == 'D'){ pressD = true; }
+	if(key == ' '){ pressSpace = true; }
 }
 
 function keyReleased(){
-	println("keyreleased worked");
-	if(key == 'w'){ pressW = false; }
-	if(key == 'a'){ pressA = false; }
-	if(key == 's'){ pressS = false; }
-	if(key == 'd'){ pressD = false; }
+	if(key == 'W'){ pressW = false; }
+	if(key == 'A'){ pressA = false; }
+	if(key == 'S'){ pressS = false; }
+	if(key == 'D'){ pressD = false; }
+	if(key == ' '){ pressSpace = false; }
 }
