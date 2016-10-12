@@ -41,7 +41,7 @@ function floorUpdate(){
 	rect(0, floorHeight, width*2, height/4);
 }
 
-function jump(){ //fix; can abuse by holding space
+function jump(){ //fix; can abuse by holding space; implement using frameCount
 	if(playerPosY > floorHeight - rectSize - jumpHeight){
 		playerPosY -= playerSpd;
 	}
