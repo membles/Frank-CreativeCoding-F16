@@ -1,4 +1,5 @@
 //For faking a moving camera, apply a +var to each coordinate in a level, then adjust based on player movement
+var DEFAULT_SPD = 3;
 
 var rectSize = 60;
 var playerPosX;
@@ -13,6 +14,7 @@ var pressS;
 var pressD;
 var pressSpace;
 var playerSpd;
+var xPositive, xNegative;
 var jumpHeight;
 var jumpBool, inJump;
 var floorPosX;
@@ -33,17 +35,19 @@ function setup() {
 	pressS = false;
 	pressD = false;
 	pressSpace = false;
-	playerSpd = 3;
+	playerSpd = DEFAULT_SPD;
 	jumpHeight = 100;
 	jumpBool = false;
 	inJump = false;
 	floorPosX = 0;
 	frame = 0;
+	xPositive = false;
+	xNegative = false;
 	//bounce = true;
 }
 
 function floorUpdate(){
-	rect(0, floorHeight, width*2, height/4);
+	rect(floorPosX, floorHeight, width*2, height/4);
 }
 
 function jump(){ //fix; can abuse by holding space; implement using frameCount
@@ -59,9 +63,18 @@ function jump(){ //fix; can abuse by holding space; implement using frameCount
 	}
 }
 
-function sceneUpdate(){ //change to take advantage of camera(); will make my life eaasier; ALSO check out frameCount
-	if (playerPosX >= width/7){
+function sceneUpdate(){ //floor moves too fast; figure out way to make it feel natural; idea: when level starts to move, set playerSpd = 0
+	//broken; movement stops and level flow stops in direction
+	if (playerPosX >= width - width/7 - rectSize/2 && xPositive){
 		floorPosX -= playerSpd;
+		playerSpd = 0;
+	}
+	else if(playerPosX < width/7 && xNegative){
+		floorPosX += playerSpd;
+		playerSpd = 0;
+	}
+	else{
+		playerSpd = DEFAULT_SPD;
 	}
 }
 
@@ -82,17 +95,28 @@ function playerUpdate(){
 	*/
 	if(movement){
 		if(pressA == true){
-			println("a is working in movement");
 			playerPosX -= playerSpd;
+			xNegative = true;
+		}
+		else{
+			xNegative = false;
 		}
 		if(pressD == true){
 			playerPosX += playerSpd;
+			xPositive = true;
+		}
+		else{
+			xPositive = false;
 		}
 		if(pressSpace){
 			jumpBool = true;
 		}
 	}
 	rect(playerPosX, playerPosY, rectSize, rectSize);
+}
+
+function levelUpdate(){ //handles movement/panning of everything besides player
+
 }
 
 function finishIntroTrans(){
@@ -111,6 +135,7 @@ function draw() {
 	background(200,200,200);
 	fill(20,20,20);
 	playerUpdate();
+	sceneUpdate();
 	floorUpdate();
 	if(jumpBool){
 		jump();
