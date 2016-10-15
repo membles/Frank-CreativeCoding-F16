@@ -20,6 +20,8 @@ var jumpHeight;
 var jumpBool, inJump;
 var floorPosX;
 var frame;
+var panSpd;
+var jumpSpd;
 //var bounce;
 
 function setup() {
@@ -44,6 +46,8 @@ function setup() {
 	frame = 0;
 	xPositive = false;
 	xNegative = false;
+	panSpd = playerSpd;
+	jumpSpd = playerSpd;
 	//bounce = true;
 }
 
@@ -57,13 +61,13 @@ function jump(){ //fix; can abuse by holding space; implement using frameCount
 		inJump = true;
 	}
 	if(playerPosY > floorHeight - rectSize - jumpHeight/2){
-		playerPosY -= playerSpd;
+		playerPosY -= jumpSpd;
 	}
 	else if(playerPosY > floorHeight - rectSize - jumpHeight * 3/4){
-		playerPosY -= (playerSpd - 1);
+		playerPosY -= (jumpSpd - 1);
 	}
 	else if(playerPosY > floorHeight - rectSize - jumpHeight){
-		playerPosY -= (playerSpd - 2);
+		playerPosY -= (jumpSpd - 2);
 	}
 	else{
 		jumpBool = false;
@@ -73,11 +77,11 @@ function jump(){ //fix; can abuse by holding space; implement using frameCount
 function sceneUpdate(){ //floor moves too fast; figure out way to make it feel natural; idea: when level starts to move, set playerSpd = 0
 	//broken; movement stops and level flow stops in direction
 	if (playerPosX >= width - width/7 - rectSize/2 && xPositive){
-		floorPosX -= playerSpd;
+		floorPosX -= panSpd;
 		playerSpd = 0;
 	}
 	else if(playerPosX < width/7 && xNegative){
-		floorPosX += playerSpd;
+		floorPosX += panSpd;
 		playerSpd = 0;
 	}
 	else{
@@ -134,8 +138,14 @@ function finishIntroTrans(){
 	}
 }
 
-function shapeParticles(){
+//both shapeParticles and shapeWave should be handled by sceneUpdate so as to pan
+function shapeParticles(var direction){
 	//particles flow from one side of screen to the other
+
+}
+
+function shapeWave(){
+	//shape wave in background
 }
 
 function draw() {
