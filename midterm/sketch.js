@@ -1,3 +1,5 @@
+//For faking a moving camera, apply a +var to each coordinate in a level, then adjust based on player movement
+
 var rectSize = 60;
 var playerPosX;
 var playerPosY;
@@ -12,8 +14,9 @@ var pressD;
 var pressSpace;
 var playerSpd;
 var jumpHeight;
-var jumpBool;
+var jumpBool, inJump;
 var floorPosX;
+var frame;
 //var bounce;
 
 function setup() {
@@ -33,7 +36,9 @@ function setup() {
 	playerSpd = 3;
 	jumpHeight = 100;
 	jumpBool = false;
+	inJump = false;
 	floorPosX = 0;
+	frame = 0;
 	//bounce = true;
 }
 
@@ -42,6 +47,10 @@ function floorUpdate(){
 }
 
 function jump(){ //fix; can abuse by holding space; implement using frameCount
+	if(!inJump){
+		frame = frameRate;
+		inJump = true;
+	}
 	if(playerPosY > floorHeight - rectSize - jumpHeight){
 		playerPosY -= playerSpd;
 	}
