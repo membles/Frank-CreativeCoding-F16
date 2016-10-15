@@ -1,4 +1,5 @@
 //For faking a moving camera, apply a +var to each coordinate in a level, then adjust based on player movement
+//a way to do jumping independent of framecount; check height, change spd
 var DEFAULT_SPD = 3;
 
 var rectSize = 60;
@@ -36,7 +37,7 @@ function setup() {
 	pressD = false;
 	pressSpace = false;
 	playerSpd = DEFAULT_SPD;
-	jumpHeight = 100;
+	jumpHeight = 80;
 	jumpBool = false;
 	inJump = false;
 	floorPosX = 0;
@@ -55,8 +56,14 @@ function jump(){ //fix; can abuse by holding space; implement using frameCount
 		frame = frameRate;
 		inJump = true;
 	}
-	if(playerPosY > floorHeight - rectSize - jumpHeight){
+	if(playerPosY > floorHeight - rectSize - jumpHeight/2){
 		playerPosY -= playerSpd;
+	}
+	else if(playerPosY > floorHeight - rectSize - jumpHeight * 3/4){
+		playerPosY -= (playerSpd - 1);
+	}
+	else if(playerPosY > floorHeight - rectSize - jumpHeight){
+		playerPosY -= (playerSpd - 2);
 	}
 	else{
 		jumpBool = false;
