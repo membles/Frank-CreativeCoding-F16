@@ -5,6 +5,12 @@ var DEFAULT_AIR_SPD
 var GRAVITY = 5;
 var bgColor;
 var floorColor;
+var LAMP_HEIGHT = 250;
+var LAMP_WIDTH = 20;
+var lightColor;
+var bulbWidth = 30;
+var bulbHeight = 15;
+var numLamps = 3;
 
 var rectSize = 60;
 var playerPosX;
@@ -25,12 +31,19 @@ var jumpBool, inJump;
 var floorPosX;
 var frame;
 var panSpd;
+var bgPanSpd;
 var jumpSpd;
 var floorWidth;
 var dropWidth;
 var stopMovement;
 var vertPanning;
-var envChangeY;
+var envChangeY, envChangeX;
+var bgChangeX, bgChangeY;
+var playerChangeX;
+
+var arrowX, arrowY;
+var arrowSegCount;
+var arrowSegSize, arrowSegPadding;
 
 var chamberWidth, chamberHeight, chamberPosX, chamberPosY;
 
@@ -42,10 +55,11 @@ function setup() {
 	noStroke();
 	bgColor = color(20, 20, 34);
 	floorColor = color(236, 240, 241);
+	lightColor = color(255,255,138);
 	playerPosX = width/2 - rectSize/2;
 	playerPosXLast = playerPosX;
 	playerPosY = 0 - 150;
-	floorHeight = height*3/4;
+	floorHeight = height*4/5;
 	intro = true;
 	segment1 = true;
 	segment2 = false;
@@ -65,6 +79,7 @@ function setup() {
 	xPositive = false;
 	xNegative = false;
 	panSpd = playerSpd;
+	bgPanSpd = panSpd / 2;
 	jumpSpd = 5;
 	floorWidth = width*2;
 	chamberPosX = floorPosX + floorWidth;
@@ -79,15 +94,72 @@ function setup() {
 	dropWidth = 180;
 	vertPanning = false;
 	envChangeY = 0;
+	envChangeX = 0;
+	playerChangeX = 0;
+	bgChangeX = 0;
+	bgChangeY = 0;
+
+	arrowX = width*2/3;
+	arrowY = height/2;
+	arrowSegCount = 0;
+	arrowSegSize = 20;
+	arrowSegPadding = 3;
 	//bounce = true;
+}
+
+function dirArrow(){
+	arrowX += bgChangeX;
+	arrowY += bgChangeY;
+	if(frameCount % 30 == 0){
+		println(frameCount);
+		arrowSegCount++;
+		println(arrowSegCount);
+	}
+
+	if(arrowSegCount >= 1){
+		for(var i = 0; i < 3; i++){
+			rect(arrowX, arrowY + i*arrowSegSize + i*arrowSegPadding, arrowSegSize, arrowSegSize);
+		}
+	}
+	if(arrowSegCount >= 2){
+		for(var i = 0; i < 3; i++){
+			rect(arrowX + arrowSegSize + arrowSegPadding, arrowY + i*arrowSegSize + i*arrowSegPadding, arrowSegSize, arrowSegSize);
+		}
+	}
+	if(arrowSegCount >= 3){
+		for(var i = 0; i < 3; i++){
+			rect(arrowX + 2*arrowSegSize + 2*arrowSegPadding, arrowY + i*arrowSegSize + i*arrowSegPadding, arrowSegSize, arrowSegSize);
+		}
+	}
+	if(arrowSegCount >= 4){
+		for(var i = 0; i < 3; i++){
+			rect(arrowX + 3*arrowSegSize + 3*arrowSegPadding, arrowY + i*arrowSegSize + i*arrowSegPadding, arrowSegSize, arrowSegSize);
+		}
+	}
+	if(arrowSegCount >= 5){
+		for(var i = 0; i < 5; i++){
+			rect(arrowX + 4*arrowSegSize + 4*arrowSegPadding, arrowY - arrowSegSize - arrowSegPadding + i*arrowSegSize + i*arrowSegPadding, arrowSegSize, arrowSegSize);
+		}
+	}
+	if(arrowSegCount >= 6){
+		for(var i = 0; i < 3; i++){
+			rect(arrowX + 5*arrowSegSize + 5*arrowSegPadding, arrowY + i*arrowSegSize + i*arrowSegPadding, arrowSegSize, arrowSegSize);
+		}
+	}
+	if(arrowSegCount >= 7){
+		rect(arrowX + 6*arrowSegSize + 6*arrowSegPadding, arrowY + arrowSegSize + arrowSegPadding, arrowSegSize, arrowSegSize);
+	}
 }
 
 function floorUpdate(){
 	fill(floorColor);
-	rect(floorPosX, floorHeight + envChangeY, floorWidth, height/4);
+	floorPosX += envChangeX;
+	floorHeight += envChangeY;
+	rect(floorPosX, floorHeight + envChangeY, floorWidth, 3000);
 }
 
 function jump(){ //fix; can abuse by holding space; implement using frameCount
+	pressSpace = false;
 	if(!inJump){
 		frame = frameRate;
 		inJump = true;
@@ -113,14 +185,40 @@ function jump(){ //fix; can abuse by holding space; implement using frameCount
 	}
 }
 
+function lampUpdateBack(){
+	for(var i = 1; i < numLamps; i++){
+		if(i % 2 != 0){
+			fill(floorColor);
+			rect(floorPosX + (floorWidth * (i/numLamps)), floorHeight - LAMP_HEIGHT, LAMP_WIDTH, LAMP_HEIGHT);
+			fill(lightColor);
+			rect(floorPosX + (floorWidth * (i/numLamps)) - 5, floorHeight - LAMP_HEIGHT, bulbWidth, bulbHeight);
+		}
+	}
+}
+
+function lampUpdateFront(){
+	fill(floorColor);
+	for(var i = 1; i < numLamps; i++){
+		if(i % 2 == 0){
+			fill(lightColor);
+			rect(floorPosX + (floorWidth * (i/numLamps)) - 5, floorHeight - LAMP_HEIGHT, bulbWidth, bulbHeight);
+			fill(floorColor);
+			rect(floorPosX + (floorWidth * (i/numLamps)), floorHeight - LAMP_HEIGHT, LAMP_WIDTH, LAMP_HEIGHT);
+		}
+	}
+}
+
 function chamberUpdate(){
 	fill(bgColor);
 	strokeWeight(50);
 	stroke(floorColor);
-	rect(chamberPosX, chamberPosY + envChangeY, chamberWidth, chamberHeight);
+	chamberPosX += envChangeX;
+	chamberPosY += envChangeY;
+	rect(floorPosX + floorWidth, chamberPosY, chamberWidth, chamberHeight);
 }
 
 function playerUpdate(){
+	fill(232, 217, 93);
 	if(segment1){
 		if(!vertPanning){
 			if(playerPosY < floorHeight - rectSize && !jumpBool && playerPosX <= floorPosX + floorWidth){
@@ -168,19 +266,25 @@ function playerUpdate(){
 		bounce = true;
 	}
 	*/
-	rect(playerPosX, playerPosY, rectSize, rectSize);
+	rect(playerPosX + playerChangeX, playerPosY, rectSize, rectSize);
 }
 
 function sceneUpdate(){ 
 	if (playerPosX >= width*3/5 && xPositive){
-		floorPosX -= panSpd;
+		//floorPosX -= panSpd;
+		envChangeX = -panSpd;
+		bgChangeX = -panSpd/2;
 		playerSpd = 0;
 	}
 	else if(playerPosX < width/7 && xNegative){
-		floorPosX += panSpd;
+		//floorPosX += panSpd;
+		envChangeX = panSpd;
+		bgChangeX = panSpd/2;
 		playerSpd = 0;
 	}
 	else{
+		envChangeX = 0;
+		bgChangeX = 0;
 		playerSpd = DEFAULT_SPD;
 	}
 
@@ -194,6 +298,10 @@ function sceneUpdate(){
 		playerSpd = DEFAULT_SPD;
 	}
 	*/
+
+	if(!intro){
+		dirArrow();
+	}
 
 	//checks for collisions within drop
 	if(playerPosY > (floorHeight - rectSize) + 1){
@@ -220,9 +328,12 @@ function sceneUpdate(){
 		segment2 = true;
 	}
 
-	playerUpdate();
-	floorUpdate();
 	chamberUpdate();
+	noStroke();
+	lampUpdateBack();
+	playerUpdate();
+	lampUpdateFront();
+	floorUpdate();
 }
 
 function levelUpdate(){ //handles movement/panning of everything besides player
@@ -231,6 +342,7 @@ function levelUpdate(){ //handles movement/panning of everything besides player
 
 function finishIntroTrans(){
 	playerPosX -= 2;
+	floorPosX -= 2;
 	if(playerPosX <= width/7){
 		intro = false;
 		movement = true;
@@ -278,7 +390,7 @@ function keyPressed(){
 	if(key == 'A'){ pressA = true; }
 	if(key == 'S'){ pressS = true; }
 	if(key == 'D'){ pressD = true; }
-	if(key == ' '){ pressSpace = true; }
+	if(key == ' ' && playerPosY == floorHeight - rectSize){ pressSpace = true; }
 }
 
 function keyReleased(){
