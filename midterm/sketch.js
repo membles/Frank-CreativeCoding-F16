@@ -1,5 +1,6 @@
 //For faking a moving camera, apply a +var to each coordinate in a level, then adjust based on player movement
 //a way to do jumping independent of framecount; check height, change spd
+//BROKEN PASSED EDGE OF FLOOR; MOVEMENT GETS MESSED UP
 var DEFAULT_SPD = 4;
 var DEFAULT_AIR_SPD
 var GRAVITY = 5;
@@ -10,7 +11,8 @@ var LAMP_WIDTH = 20;
 var lightColor;
 var bulbWidth = 30;
 var bulbHeight = 15;
-var numLamps = 3;
+var numLamps = 6;
+var numHallLamps = 5;
 
 var rectSize = 60;
 var playerPosX;
@@ -47,6 +49,13 @@ var arrowSegSize, arrowSegPadding;
 
 var chamberWidth, chamberHeight, chamberPosX, chamberPosY;
 
+var closeDoors;
+var doorFrameCount;
+var doorPosX;
+var doorSpd;
+var doorHeight;
+var hallWidth;
+
 var clickShapes; //array for falling shapes in segment 2
 //var bounce;
 
@@ -81,9 +90,17 @@ function setup() {
 	panSpd = playerSpd;
 	bgPanSpd = panSpd / 2;
 	jumpSpd = 5;
-	floorWidth = width*2;
+	floorWidth = width*2; //width*5;
 	chamberPosX = floorPosX + floorWidth;
-	chamberPosY = 700; //temp value; change later
+	chamberPosY = 1300; //temp value; change later
+
+	closeDoors = false;
+	doorFrameCount = 0;
+	doorPosX = floorPosX + floorWidth;
+	doorSpd = 4;
+	doorHeight = 0;
+	doorPadding = 80;
+	hallWidth = width*2;
 	
 	//for testing
 	//chamberPosX = width/2;
@@ -99,7 +116,7 @@ function setup() {
 	bgChangeX = 0;
 	bgChangeY = 0;
 
-	arrowX = width*2/3;
+	arrowX = width*3/5;
 	arrowY = height/2;
 	arrowSegCount = 0;
 	arrowSegSize = 20;
@@ -107,13 +124,50 @@ function setup() {
 	//bounce = true;
 }
 
+function hallway(){
+	fill(floorColor);
+	
+	//ceiling
+	rect(floorPosX + floorWidth - 5, 0, hallWidth, floorHeight - 250);
+
+	//floor
+	rect(floorPosX + floorWidth - 5, floorHeight, hallWidth, 3000);
+
+	if(playerPosX > floorPosX + floorWidth - 5 + 300){
+		closeDoors = true;
+	}
+
+	fill(lightColor);
+	for(var i = 1; i < numHallLamps; i++){
+		rect(floorPosX + floorWidth - 5 + (hallWidth * (i/numHallLamps)), floorHeight - 250, bulbWidth, bulbHeight/2);
+	}
+
+
+	fill(floorColor);
+	if(closeDoors == true){
+		doorFrameCount++;
+		doorHeight += doorSpd;
+		doorPosX = floorPosX + floorWidth + 50;
+		rect(doorPosX, floorHeight - 250 - 4, 30, doorHeight);
+		rect(doorPosX, floorHeight + 4 - doorHeight, 30, doorHeight);
+
+		if(doorHeight >= 40){
+			rect(doorPosX + doorPadding, floorHeight - 250 - 4, 30, (doorHeight - 40));
+			rect(doorPosX + doorPadding, floorHeight + 4 - (doorHeight - 40), 30, (doorHeight - 40));
+		}
+
+		if(doorHeight >= 80){
+			rect(doorPosX + doorPadding*2, floorHeight - 250 - 4, 30, (doorHeight - 80));
+			rect(doorPosX + doorPadding*2, floorHeight + 4 - (doorHeight - 80), 30, (doorHeight - 80));
+		}
+	}
+}
+
 function dirArrow(){
 	arrowX += bgChangeX;
 	arrowY += bgChangeY;
 	if(frameCount % 30 == 0){
-		println(frameCount);
 		arrowSegCount++;
-		println(arrowSegCount);
 	}
 
 	if(arrowSegCount >= 1){
@@ -156,6 +210,11 @@ function floorUpdate(){
 	floorPosX += envChangeX;
 	floorHeight += envChangeY;
 	rect(floorPosX, floorHeight + envChangeY, floorWidth, 3000);
+}
+
+function wallUpdate(){
+	fill(floorColor);
+	rect(floorPosX - 50, 0, 50, height);
 }
 
 function jump(){ //fix; can abuse by holding space; implement using frameCount
@@ -221,14 +280,16 @@ function playerUpdate(){
 	fill(232, 217, 93);
 	if(segment1){
 		if(!vertPanning){
-			if(playerPosY < floorHeight - rectSize && !jumpBool && playerPosX <= floorPosX + floorWidth){
+			if(playerPosY < floorHeight - rectSize && !jumpBool){ //&& playerPosX <= floorPosX + floorWidth){
 				playerPosY += GRAVITY;
 			}
+			/*
 			else if(playerPosX > floorPosX + floorWidth){
 				if(playerPosY < chamberPosY){
 					playerPosY += GRAVITY;
 				}
 			}
+			*/
 		}
 		if(movement){
 			if(pressA == true){
@@ -250,9 +311,17 @@ function playerUpdate(){
 			}
 		}
 	}
-	if(playerPosX > floorPosX - rectSize && playerPosX < floorPosX + floorWidth - 1){
+	if(playerPosX > floorPosX - rectSize){ //&& playerPosX < floorPosX + floorWidth - 1){
 		if(playerPosY > floorHeight - rectSize){
 			playerPosY = floorHeight - rectSize;
+		}
+	}
+	if(playerPosX < floorPosX){
+		playerPosX = floorPosX;
+	}
+	if(closeDoors){
+		if(playerPosX < doorPosX + doorPadding*2 + 30 && doorHeight > 80){
+			playerPosX = doorPosX + doorPadding*2 + 30;
 		}
 	}
 	/*
@@ -270,7 +339,7 @@ function playerUpdate(){
 }
 
 function sceneUpdate(){ 
-	if (playerPosX >= width*3/5 && xPositive){
+	if (playerPosX >= width/2 && xPositive){
 		//floorPosX -= panSpd;
 		envChangeX = -panSpd;
 		bgChangeX = -panSpd/2;
@@ -303,6 +372,7 @@ function sceneUpdate(){
 		dirArrow();
 	}
 
+	/*
 	//checks for collisions within drop
 	if(playerPosY > (floorHeight - rectSize) + 1){
 		if(playerPosY < chamberPosY){
@@ -327,13 +397,16 @@ function sceneUpdate(){
 		segment1 = false;
 		segment2 = true;
 	}
+	*/
 
-	chamberUpdate();
+	//chamberUpdate();
 	noStroke();
+	hallway();
 	lampUpdateBack();
 	playerUpdate();
 	lampUpdateFront();
 	floorUpdate();
+	wallUpdate();
 }
 
 function levelUpdate(){ //handles movement/panning of everything besides player
