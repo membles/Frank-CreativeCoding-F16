@@ -13,10 +13,12 @@ var bgWallColor;
 var LAMP_HEIGHT = 250;
 var LAMP_WIDTH = 20;
 var lightColor;
+var lightColorTrans;
 var bulbWidth = 30;
 var bulbHeight = 15;
 var numLamps = 6;
 var numHallLamps = 5;
+var lightRayWidth;
 
 var rectSize = 60;
 var playerPosX;
@@ -76,6 +78,7 @@ function setup() {
 	bgColor = color(20, 20, 34);
 	floorColor = color(236, 240, 241);
 	lightColor = color(255,255,138);
+	lightColorTrans = color(255,255,138,50);
 	bgWallColor = color(76, 92, 104);
 	playerPosX = width/2 - rectSize/2;
 	playerPosXLast = playerPosX;
@@ -114,6 +117,7 @@ function setup() {
 	doorPadding = 80;
 	hallWidth = width*2;
 	
+	lightRayWidth = bulbWidth * 3;
 	
 	chamberHeight = 600;
 	chamberWidth = 600;
@@ -158,9 +162,11 @@ function hallway(){
 		closeDoors = true;
 	}
 
-	fill(lightColor);
 	for(var i = 1; i < numHallLamps; i++){
+		fill(lightColor);
 		rect(floorPosX + floorWidth - 5 + (hallWidth * (i/numHallLamps)), floorHeight - 250, bulbWidth, bulbHeight/2);
+		//fill(lightColorTrans);
+		//quad(floorPosX + floorWidth - 5 + (hallWidth * (i/numHallLamps)), floorHeight - 250 + bulbHeight/2, floorPosX + floorWidth - 5 + (hallWidth * (i/numHallLamps)) + bulbWidth, floorHeight - 250 + bulbHeight/2, floorPosX + floorWidth - 5 + (hallWidth * (i/numHallLamps)) + bulbWidth + lightRayWidth, floorHeight, floorPosX + floorWidth - 5 + (hallWidth * (i/numHallLamps)) - lightRayWidth, floorHeight);
 	}
 
 
@@ -193,7 +199,8 @@ function hallway(){
 
 function dirArrow(){
 	arrowX += bgChangeX;
-	arrowY += bgChangeY;
+	//arrowY += bgChangeY;
+	arrowY += envChangeY;
 	if(frameCount % 30 == 0){
 		arrowSegCount++;
 	}
@@ -239,6 +246,7 @@ function floorUpdate(){
 		end = false;
 		floorPosX = 0;
 		floorHeight = 1200;
+		arrowY = floorHeight - 200;
 	}
 	floorPosX += envChangeX;
 	floorHeight += envChangeY;
@@ -285,6 +293,8 @@ function lampUpdateBack(){
 			rect(floorPosX + (floorWidth * (i/numLamps)), floorHeight - LAMP_HEIGHT, LAMP_WIDTH, LAMP_HEIGHT);
 			fill(lightColor);
 			rect(floorPosX + (floorWidth * (i/numLamps)) - 5, floorHeight - LAMP_HEIGHT, bulbWidth, bulbHeight);
+			fill(lightColorTrans);
+			quad(floorPosX + (floorWidth * (i/numLamps)) - 5, floorHeight + bulbHeight - LAMP_HEIGHT, floorPosX + (floorWidth * (i/numLamps)) + bulbWidth - 5, floorHeight + bulbHeight - LAMP_HEIGHT, floorPosX + (floorWidth * (i/numLamps)) + bulbWidth + lightRayWidth - 5, floorHeight, floorPosX + (floorWidth * (i/numLamps)) - 5 - lightRayWidth, floorHeight);
 		}
 	}
 }
@@ -293,6 +303,8 @@ function lampUpdateFront(){
 	fill(floorColor);
 	for(var i = 1; i < numLamps; i++){
 		if(i % 2 == 0){
+			fill(lightColorTrans);
+			quad(floorPosX + (floorWidth * (i/numLamps)) - 5, floorHeight + bulbHeight - LAMP_HEIGHT, floorPosX + (floorWidth * (i/numLamps)) + bulbWidth - 5, floorHeight + bulbHeight - LAMP_HEIGHT, floorPosX + (floorWidth * (i/numLamps)) + bulbWidth + lightRayWidth - 5, floorHeight, floorPosX + (floorWidth * (i/numLamps)) - 5 - lightRayWidth, floorHeight);
 			fill(lightColor);
 			rect(floorPosX + (floorWidth * (i/numLamps)) - 5, floorHeight - LAMP_HEIGHT, bulbWidth, bulbHeight);
 			fill(floorColor);
@@ -393,7 +405,7 @@ function playerUpdate(){
 
 function fadeScreen(){
 	if(fade){
-		fadeTrans += 4;
+		fadeTrans += 2;
 	}
 	fill(255,255,255, fadeTrans);
 	noStroke();
