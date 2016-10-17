@@ -6,6 +6,7 @@ var DEFAULT_AIR_SPD
 var GRAVITY = 5;
 var bgColor;
 var floorColor;
+var bgWallColor;
 var LAMP_HEIGHT = 250;
 var LAMP_WIDTH = 20;
 var lightColor;
@@ -37,6 +38,8 @@ var bgPanSpd;
 var jumpSpd;
 var floorWidth;
 var dropWidth;
+var dropPosX;
+var inDrop;
 var stopMovement;
 var vertPanning;
 var envChangeY, envChangeX;
@@ -65,6 +68,7 @@ function setup() {
 	bgColor = color(20, 20, 34);
 	floorColor = color(236, 240, 241);
 	lightColor = color(255,255,138);
+	bgWallColor = color(76, 92, 104);
 	playerPosX = width/2 - rectSize/2;
 	playerPosXLast = playerPosX;
 	playerPosY = 0 - 150;
@@ -91,7 +95,7 @@ function setup() {
 	bgPanSpd = panSpd / 2;
 	jumpSpd = 5;
 	floorWidth = width*2; //width*5;
-	chamberPosX = floorPosX + floorWidth;
+	chamberPosX = floorPosX + floorWidth + 50;
 	chamberPosY = 1300; //temp value; change later
 
 	closeDoors = false;
@@ -109,6 +113,8 @@ function setup() {
 	chamberHeight = 600;
 	chamberWidth = 600;
 	dropWidth = 180;
+	dropPosX = floorPosX + floorWidth - 5 + (hallWidth * ((numHallLamps-1)/numHallLamps)) - dropWidth/2 + bulbWidth/2;
+	inDrop = false;
 	vertPanning = false;
 	envChangeY = 0;
 	envChangeX = 0;
@@ -125,10 +131,15 @@ function setup() {
 }
 
 function hallway(){
+	doorPosX = floorPosX + floorWidth + 50;
+	//bg wall
+	fill(bgWallColor);
+	rect(doorPosX, floorHeight - 250, hallWidth - 50 - 5, 250);
+
 	fill(floorColor);
-	
+
 	//ceiling
-	rect(floorPosX + floorWidth - 5, 0, hallWidth, floorHeight - 250);
+	rect(floorPosX + floorWidth - 5, floorHeight - 720*4/5, hallWidth, 720*4/5 - 250);
 
 	//floor
 	rect(floorPosX + floorWidth - 5, floorHeight, hallWidth, 3000);
@@ -147,7 +158,7 @@ function hallway(){
 	if(closeDoors == true){
 		doorFrameCount++;
 		doorHeight += doorSpd;
-		doorPosX = floorPosX + floorWidth + 50;
+		//doorPosX = floorPosX + floorWidth + 50;
 		rect(doorPosX, floorHeight - 250 - 4, 30, doorHeight);
 		rect(doorPosX, floorHeight + 4 - doorHeight, 30, doorHeight);
 
@@ -161,6 +172,13 @@ function hallway(){
 			rect(doorPosX + doorPadding*2, floorHeight + 4 - (doorHeight - 80), 30, (doorHeight - 80));
 		}
 	}
+
+	//drop space
+	dropPosX = floorPosX + floorWidth - 5 + (hallWidth * ((numHallLamps-1)/numHallLamps)) - dropWidth/2 + bulbWidth/2;
+	fill(bgWallColor);
+	rect(dropPosX, floorHeight, dropWidth, 1000);
+
+
 }
 
 function dirArrow(){
@@ -215,6 +233,7 @@ function floorUpdate(){
 function wallUpdate(){
 	fill(floorColor);
 	rect(floorPosX - 50, 0, 50, height);
+	rect(doorPosX + hallWidth - 5 - 50 - 50, floorHeight - 250, 50, 300);
 }
 
 function jump(){ //fix; can abuse by holding space; implement using frameCount
@@ -283,6 +302,9 @@ function playerUpdate(){
 			if(playerPosY < floorHeight - rectSize && !jumpBool){ //&& playerPosX <= floorPosX + floorWidth){
 				playerPosY += GRAVITY;
 			}
+			if(playerPosX > dropPosX && playerPosX < dropPosX + dropWidth + 1 - rectSize && !jumpBool && playerPosY < floorHeight + 5){
+				playerPosY += GRAVITY;
+			}
 			/*
 			else if(playerPosX > floorPosX + floorWidth){
 				if(playerPosY < chamberPosY){
@@ -311,7 +333,19 @@ function playerUpdate(){
 			}
 		}
 	}
-	if(playerPosX > floorPosX - rectSize){ //&& playerPosX < floorPosX + floorWidth - 1){
+
+	if(playerPosY > floorHeight - rectSize && playerPosX > dropPosX && playerPosX < dropPosX + dropWidth + 1 - rectSize){
+		inDrop = true;
+	}
+	if(inDrop){
+		if(playerPosX < dropPosX){
+			playerPosX = dropPosX;
+		}
+		else if(playerPosX > dropPosX + dropWidth - rectSize){
+			playerPosX = dropPosX + dropWidth - rectSize;
+		}
+	}
+	if(playerPosX > floorPosX - rectSize && (playerPosX < dropPosX || playerPosX > dropPosX + dropWidth + 1 - rectSize) && !inDrop){ //&& playerPosX < floorPosX + floorWidth - 1){
 		if(playerPosY > floorHeight - rectSize){
 			playerPosY = floorHeight - rectSize;
 		}
@@ -339,7 +373,7 @@ function playerUpdate(){
 }
 
 function sceneUpdate(){ 
-	if (playerPosX >= width/2 && xPositive){
+	if (playerPosX >= width/2 && xPositive && !inDrop){
 		//floorPosX -= panSpd;
 		envChangeX = -panSpd;
 		bgChangeX = -panSpd/2;
@@ -355,6 +389,10 @@ function sceneUpdate(){
 		envChangeX = 0;
 		bgChangeX = 0;
 		playerSpd = DEFAULT_SPD;
+	}
+
+	if(inDrop && playerPosY >= floorHeight + 5){
+		envChangeY = -GRAVITY;
 	}
 
 	//code below breaks panning because uses same check and then stops resets playerSpd; need different method to handle
