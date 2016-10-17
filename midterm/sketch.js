@@ -59,6 +59,8 @@ var doorSpd;
 var doorHeight;
 var hallWidth;
 
+var end;
+
 var clickShapes; //array for falling shapes in segment 2
 //var bounce;
 
@@ -122,12 +124,14 @@ function setup() {
 	bgChangeX = 0;
 	bgChangeY = 0;
 
-	arrowX = width*3/5;
-	arrowY = height/2;
+	arrowX = floorPosX + width*3/5;
+	arrowY = floorHeight - 200;
 	arrowSegCount = 0;
 	arrowSegSize = 20;
 	arrowSegPadding = 3;
 	//bounce = true;
+
+	end = false;
 }
 
 function hallway(){
@@ -142,7 +146,7 @@ function hallway(){
 	rect(floorPosX + floorWidth - 5, floorHeight - 720*4/5, hallWidth, 720*4/5 - 250);
 
 	//floor
-	rect(floorPosX + floorWidth - 5, floorHeight, hallWidth, 3000);
+	rect(floorPosX + floorWidth - 5, floorHeight, hallWidth, 1200);
 
 	if(playerPosX > floorPosX + floorWidth - 5 + 300){
 		closeDoors = true;
@@ -176,7 +180,7 @@ function hallway(){
 	//drop space
 	dropPosX = floorPosX + floorWidth - 5 + (hallWidth * ((numHallLamps-1)/numHallLamps)) - dropWidth/2 + bulbWidth/2;
 	fill(bgWallColor);
-	rect(dropPosX, floorHeight, dropWidth, 1000);
+	rect(dropPosX, floorHeight, dropWidth, 1200);
 
 
 }
@@ -225,9 +229,17 @@ function dirArrow(){
 
 function floorUpdate(){
 	fill(floorColor);
+	if(end == true){
+		end = false;
+		floorPosX = 0;
+		floorHeight = 1200;
+		if(playerPosY >= floorHeight - rectSize - 10){
+			inDrop = false;
+		}
+	}
 	floorPosX += envChangeX;
 	floorHeight += envChangeY;
-	rect(floorPosX, floorHeight + envChangeY, floorWidth, 3000);
+	rect(floorPosX, floorHeight + envChangeY, floorWidth, 1200);
 }
 
 function wallUpdate(){
@@ -337,7 +349,8 @@ function playerUpdate(){
 	if(playerPosY > floorHeight - rectSize && playerPosX > dropPosX && playerPosX < dropPosX + dropWidth + 1 - rectSize){
 		inDrop = true;
 	}
-	if(inDrop){
+	
+	if(inDrop && playerPosY > floorHeight + 1 - rectSize){
 		if(playerPosX < dropPosX){
 			playerPosX = dropPosX;
 		}
@@ -442,9 +455,15 @@ function sceneUpdate(){
 	hallway();
 	lampUpdateBack();
 	playerUpdate();
+
+	if(playerPosY > floorHeight + 1900){
+		end = true;
+		closeDoors = false;
+	}
 	lampUpdateFront();
 	floorUpdate();
 	wallUpdate();
+	println(playerPosY);
 }
 
 function levelUpdate(){ //handles movement/panning of everything besides player
