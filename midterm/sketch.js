@@ -532,6 +532,10 @@ function keyPressed(){
 	if(key == 'S'){ pressS = true; }
 	if(key == 'D'){ pressD = true; }
 	if(key == ' ' && playerPosY == floorHeight - rectSize){ pressSpace = true; }
+	if(keyCode == UP_ARROW){ pressW = true; }
+	if(keyCode == LEFT_ARROW){ pressA = true; }
+	if(keyCode == DOWN_ARROW){ pressS = true; }
+	if(keyCode == RIGHT_ARROW){ pressD = true; }
 }
 
 function keyReleased(){
@@ -540,4 +544,8 @@ function keyReleased(){
 	if(key == 'S'){ pressS = false; }
 	if(key == 'D'){ pressD = false; }
 	if(key == ' '){ pressSpace = false; }
+	if(keyCode == UP_ARROW){ pressW = false; }
+	if(keyCode == LEFT_ARROW){ pressA = false; }
+	if(keyCode == DOWN_ARROW){ pressS = false; }
+	if(keyCode == RIGHT_ARROW){ pressD = false; }
 }
