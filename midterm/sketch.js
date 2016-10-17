@@ -1,6 +1,9 @@
-//For faking a moving camera, apply a +var to each coordinate in a level, then adjust based on player movement
-//a way to do jumping independent of framecount; check height, change spd
-//BROKEN PASSED EDGE OF FLOOR; MOVEMENT GETS MESSED UP
+//Midterm Project
+//Creative Coding
+//Fall 2016
+//Julian Frank
+
+
 var DEFAULT_SPD = 4;
 var DEFAULT_AIR_SPD
 var GRAVITY = 5;
@@ -60,8 +63,11 @@ var doorHeight;
 var hallWidth;
 
 var end;
+var split;
+var fade;
+var fadeTrans;
 
-var clickShapes; //array for falling shapes in segment 2
+//var clickShapes; //array for falling shapes in segment 2
 //var bounce;
 
 function setup() {
@@ -108,9 +114,6 @@ function setup() {
 	doorPadding = 80;
 	hallWidth = width*2;
 	
-	//for testing
-	//chamberPosX = width/2;
-	//chamberPosY = height/2;
 	
 	chamberHeight = 600;
 	chamberWidth = 600;
@@ -132,6 +135,9 @@ function setup() {
 	//bounce = true;
 
 	end = false;
+	split = false;
+	fade = false;
+	fadeTrans = 0;
 }
 
 function hallway(){
@@ -229,13 +235,10 @@ function dirArrow(){
 
 function floorUpdate(){
 	fill(floorColor);
-	if(end == true){
+	if(end == true && playerPosY > floorHeight + 2000){
 		end = false;
 		floorPosX = 0;
 		floorHeight = 1200;
-		if(playerPosY >= floorHeight - rectSize - 10){
-			inDrop = false;
-		}
 	}
 	floorPosX += envChangeX;
 	floorHeight += envChangeY;
@@ -371,6 +374,9 @@ function playerUpdate(){
 			playerPosX = doorPosX + doorPadding*2 + 30;
 		}
 	}
+	if(end == true && playerPosY > height/2 - rectSize/2){
+		playerPosY -= GRAVITY;
+	}
 	/*
 	else if(bounce && playerPosY == floorHeight){
 		for(var i = 0; i < 10; i++){
@@ -383,6 +389,15 @@ function playerUpdate(){
 	}
 	*/
 	rect(playerPosX + playerChangeX, playerPosY, rectSize, rectSize);
+}
+
+function fadeScreen(){
+	if(fade){
+		fadeTrans += 4;
+	}
+	fill(255,255,255, fadeTrans);
+	noStroke();
+	rect(0, 0, width, height);
 }
 
 function sceneUpdate(){ 
@@ -407,17 +422,6 @@ function sceneUpdate(){
 	if(inDrop && playerPosY >= floorHeight + 5){
 		envChangeY = -GRAVITY;
 	}
-
-	//code below breaks panning because uses same check and then stops resets playerSpd; need different method to handle
-	//checks for collision with rightmost wall
-	/*
-	if(playerPosX >= floorPosX + floorWidth + dropWidth - rectSize && xPositive){
-		playerSpd = 0;
-	}
-	else{
-		playerSpd = DEFAULT_SPD;
-	}
-	*/
 
 	if(!intro){
 		dirArrow();
@@ -460,10 +464,17 @@ function sceneUpdate(){
 		end = true;
 		closeDoors = false;
 	}
+	if(playerPosY >= floorHeight - rectSize - 10 && playerPosY < floorHeight - rectSize){
+		inDrop = false;
+	}
+	if(floorHeight < height*4/5 && playerPosX < doorPosX){
+		envChangeY = 0;
+		fade = true;
+	}
 	lampUpdateFront();
 	floorUpdate();
 	wallUpdate();
-	println(playerPosY);
+	fadeScreen();
 }
 
 function levelUpdate(){ //handles movement/panning of everything besides player
