@@ -242,12 +242,6 @@ function dirArrow(){
 
 function floorUpdate(){
 	fill(floorColor);
-	if(end == true && playerPosY > floorHeight + 2000){
-		end = false;
-		floorPosX = 0;
-		floorHeight = 1200;
-		arrowY = floorHeight - 200;
-	}
 	floorPosX += envChangeX;
 	floorHeight += envChangeY;
 	rect(floorPosX, floorHeight + envChangeY, floorWidth, 1200);
@@ -365,7 +359,7 @@ function playerUpdate(){
 		inDrop = true;
 	}
 	
-	if(inDrop && playerPosY > floorHeight + 1 - rectSize){
+	if(inDrop && playerPosY > floorHeight + 1 - rectSize && playerPosY < floorHeight + 1200){
 		if(playerPosX < dropPosX){
 			playerPosX = dropPosX;
 		}
@@ -481,8 +475,20 @@ function sceneUpdate(){
 	}
 	if(floorHeight < height*4/5 && playerPosX < doorPosX){
 		envChangeY = 0;
-		fade = true;
+		//fade = true;
 	}
+
+	if(end == true && playerPosY > floorHeight + 2000){
+		end = false;
+		floorPosX = 0;
+		floorHeight = 1200;
+		arrowY = floorHeight - 200;
+		arrowX = floorPosX + width*3/5;
+		closeDoors = false;
+		doorHeight = 0;
+		arrowSegCount = 0;
+	}
+
 	lampUpdateFront();
 	floorUpdate();
 	wallUpdate();
