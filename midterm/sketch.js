@@ -20,6 +20,7 @@ var numLamps = 6;
 var numHallLamps = 5;
 var lightRayWidth;
 
+var phase;
 var rectSize = 60;
 var playerPosX;
 var playerPosY;
@@ -69,6 +70,17 @@ var split;
 var fade;
 var fadeTrans;
 
+var openEndDoor;
+var endDoorHeight;
+
+var bridgeWidth;
+
+var creatureGrow;
+var creatureSize;
+var creatureColorFade;
+
+var restarted;
+
 //var clickShapes; //array for falling shapes in segment 2
 //var bounce;
 
@@ -110,12 +122,14 @@ function setup() {
 	chamberPosY = 1300; //temp value; change later
 
 	closeDoors = false;
+	openEndDoor = false;
 	doorFrameCount = 0;
 	doorPosX = floorPosX + floorWidth;
 	doorSpd = 4;
 	doorHeight = 0;
 	doorPadding = 80;
 	hallWidth = width*2;
+	endDoorHeight = 0;
 	
 	lightRayWidth = bulbWidth * 3;
 	
@@ -138,10 +152,95 @@ function setup() {
 	arrowSegPadding = 3;
 	//bounce = true;
 
+	phase = 1;
+
 	end = false;
 	split = false;
 	fade = false;
 	fadeTrans = 0;
+
+	bridgeWidth = 1000;
+	creatureGrow = false;
+	creatureSize = 30;
+	creatureColorFade = 255;
+
+	restarted = false;
+}
+
+function restart(){
+	playerPosX = width/2 - rectSize/2;
+	playerPosXLast = playerPosX;
+	playerPosY = 0 - 600;
+	floorHeight = height*4/5;
+	intro = true;
+	segment1 = true;
+	segment2 = false;
+	movement = false;
+	stopMovement = false;
+	pressW = false;
+	pressA = false;
+	pressS = false;
+	pressD = false;
+	pressSpace = false;
+	playerSpd = DEFAULT_SPD;
+	jumpHeight = 60;
+	jumpBool = false;
+	inJump = false;
+	floorPosX = 0;
+	frame = 0;
+	xPositive = false;
+	xNegative = false;
+	panSpd = playerSpd;
+	bgPanSpd = panSpd / 2;
+	jumpSpd = 5;
+	floorWidth = width*2; //width*5;
+	chamberPosX = floorPosX + floorWidth + 50;
+	chamberPosY = 1300; //temp value; change later
+
+	closeDoors = false;
+	openEndDoor = false;
+	doorFrameCount = 0;
+	doorPosX = floorPosX + floorWidth;
+	doorSpd = 4;
+	doorHeight = 0;
+	doorPadding = 80;
+	hallWidth = width*2;
+	endDoorHeight = 0;
+	
+	lightRayWidth = bulbWidth * 3;
+	
+	chamberHeight = 600;
+	chamberWidth = 600;
+	dropWidth = 180;
+	dropPosX = floorPosX + floorWidth - 5 + (hallWidth * ((numHallLamps-1)/numHallLamps)) - dropWidth/2 + bulbWidth/2;
+	inDrop = false;
+	vertPanning = false;
+	envChangeY = 0;
+	envChangeX = 0;
+	playerChangeX = 0;
+	bgChangeX = 0;
+	bgChangeY = 0;
+
+	arrowX = floorPosX + width*3/5;
+	arrowY = floorHeight - 200;
+	arrowSegCount = 0;
+	arrowSegSize = 20;
+	arrowSegPadding = 3;
+	//bounce = true;
+
+	phase = 1;
+
+	end = false;
+	split = false;
+	fade = false;
+	fadeTrans = 0;
+
+	bridgeWidth = 1000;
+	creatureGrow = false;
+	creatureSize = 30;
+	creatureColorFade = 255;
+
+	restarted = true;
 }
 
 function hallway(){
@@ -160,6 +259,9 @@ function hallway(){
 
 	if(playerPosX > floorPosX + floorWidth - 5 + 300){
 		closeDoors = true;
+	}
+	if(phase == 2 && playerPosX > floorPosX + floorWidth - 5 + hallWidth - 300 && closeDoors == true){
+		openEndDoor = true;
 	}
 
 	for(var i = 1; i < numHallLamps; i++){
@@ -191,8 +293,20 @@ function hallway(){
 
 	//drop space
 	dropPosX = floorPosX + floorWidth - 5 + (hallWidth * ((numHallLamps-1)/numHallLamps)) - dropWidth/2 + bulbWidth/2;
-	fill(bgWallColor);
-	rect(dropPosX, floorHeight, dropWidth, 1200);
+	if(phase == 1){
+		fill(bgWallColor);
+		rect(dropPosX, floorHeight, dropWidth, 1200);
+	}
+	else if(phase == 2){
+		if(openEndDoor && endDoorHeight <= 125){
+			endDoorHeight += doorSpd;
+		}
+	}
+
+	//end door
+	fill(floorColor);
+	rect(doorPosX + hallWidth - 5 - 50 - 50, floorHeight - 250 - endDoorHeight, 50, 125);
+	rect(doorPosX + hallWidth - 5 - 50 - 50, floorHeight - 125 + endDoorHeight, 50, 125);
 
 
 }
@@ -250,7 +364,7 @@ function floorUpdate(){
 function wallUpdate(){
 	fill(floorColor);
 	rect(floorPosX - 50, 0, 50, height);
-	rect(doorPosX + hallWidth - 5 - 50 - 50, floorHeight - 250, 50, 300);
+	//rect(doorPosX + hallWidth - 5 - 50 - 50, floorHeight - 250, 50, 300);
 }
 
 function jump(){ //fix; can abuse by holding space; implement using frameCount
@@ -316,6 +430,35 @@ function chamberUpdate(){
 	rect(floorPosX + floorWidth, chamberPosY, chamberWidth, chamberHeight);
 }
 
+function bridgeUpdate(){
+	fill(floorColor);
+	rect(doorPosX + hallWidth - 55, floorHeight, bridgeWidth, 75);
+
+	//creature
+	if(playerPosX >= doorPosX + hallWidth + bridgeWidth - 55 - 100 - rectSize){
+		creatureGrow = true;
+	}
+	if(creatureGrow == true){
+		creatureSize += 25;
+	}
+	if(creatureSize > 1600){
+		restart();
+	}
+	fill(231, 76, 60);
+	rect(doorPosX + hallWidth + bridgeWidth - 55 - 100 - (creatureSize - 30)/2, floorHeight - 30 - (creatureSize - 30)/2, creatureSize, creatureSize);
+
+	if(frameCount % 8 == 0 && !creatureGrow){
+		for(var i = 0; i < 4; i++){
+			fill(142, 68, 173, 240);
+			rect(doorPosX + hallWidth + bridgeWidth - 55 - 100 + 15, floorHeight - 30 - 15, 30, 30);
+		}		
+	}
+	if(frameCount % 10 == 0 && !creatureGrow){
+		fill(41, 128, 185, 240);
+		rect(doorPosX + hallWidth + bridgeWidth - 55 - 100 - 15, floorHeight - 30 + 15, 30, 30);
+	}
+}
+
 function playerUpdate(){
 	fill(232, 217, 93);
 	if(segment1){
@@ -323,7 +466,7 @@ function playerUpdate(){
 			if(playerPosY < floorHeight - rectSize && !jumpBool){ //&& playerPosX <= floorPosX + floorWidth){
 				playerPosY += GRAVITY;
 			}
-			if(playerPosX > dropPosX && playerPosX < dropPosX + dropWidth + 1 - rectSize && !jumpBool && playerPosY < floorHeight + 5){
+			if(phase == 1 && playerPosX > dropPosX && playerPosX < dropPosX + dropWidth + 1 - rectSize && !jumpBool && playerPosY < floorHeight + 5){
 				playerPosY += GRAVITY;
 			}
 			/*
@@ -355,7 +498,7 @@ function playerUpdate(){
 		}
 	}
 
-	if(playerPosY > floorHeight - rectSize && playerPosX > dropPosX && playerPosX < dropPosX + dropWidth + 1 - rectSize){
+	if(phase == 1 && playerPosY > floorHeight - rectSize && playerPosX > dropPosX && playerPosX < dropPosX + dropWidth + 1 - rectSize){
 		inDrop = true;
 	}
 	
@@ -367,7 +510,12 @@ function playerUpdate(){
 			playerPosX = dropPosX + dropWidth - rectSize;
 		}
 	}
-	if(playerPosX > floorPosX - rectSize && (playerPosX < dropPosX || playerPosX > dropPosX + dropWidth + 1 - rectSize) && !inDrop){ //&& playerPosX < floorPosX + floorWidth - 1){
+	if(phase == 1 && playerPosX > floorPosX - rectSize && (playerPosX < dropPosX || playerPosX > dropPosX + dropWidth + 1 - rectSize) && !inDrop){ //&& playerPosX < floorPosX + floorWidth - 1){
+		if(playerPosY > floorHeight - rectSize){
+			playerPosY = floorHeight - rectSize;
+		}
+	}
+	else if(phase == 2 && playerPosX > floorPosX - rectSize && !inDrop){
 		if(playerPosY > floorHeight - rectSize){
 			playerPosY = floorHeight - rectSize;
 		}
@@ -469,6 +617,7 @@ function sceneUpdate(){
 	if(playerPosY > floorHeight + 1900){
 		end = true;
 		closeDoors = false;
+		phase = 2;
 	}
 	if(playerPosY >= floorHeight - rectSize - 10 && playerPosY < floorHeight - rectSize){
 		inDrop = false;
@@ -489,14 +638,24 @@ function sceneUpdate(){
 		arrowSegCount = 0;
 	}
 
+	if(phase == 2){
+		bridgeUpdate();
+	}
+
 	lampUpdateFront();
 	floorUpdate();
 	wallUpdate();
 	fadeScreen();
-}
-
-function levelUpdate(){ //handles movement/panning of everything besides player
-
+	if(restarted){
+		if(creatureColorFade > 0){
+			creatureColorFade -= 5;
+		}
+		fill(231, 76, 60, creatureColorFade);
+		rect(0, 0, width, height);
+		if(creatureColorFade == 0){
+			restarted = false;
+		}
+	}
 }
 
 function finishIntroTrans(){
