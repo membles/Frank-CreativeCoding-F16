@@ -7,7 +7,6 @@ function preload(){
 
 function setup(){
 	createCanvas(600,600);
-	bounceSound.setVolume(0.1);
 	bounceSound.playMode('sustain');
 	xPos = width/2;
 	yPos = height/2;
