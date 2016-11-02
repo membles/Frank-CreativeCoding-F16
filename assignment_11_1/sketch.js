@@ -1,3 +1,8 @@
+//Julian Frank
+//Assignment 11.1
+//Creative Coding Fall 2016
+//interactive animation of squares with random variables. click to interact.
+
 var shapes = [];
 
 function setup(){
