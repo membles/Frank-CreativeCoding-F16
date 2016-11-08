@@ -1,7 +1,7 @@
 //Julian Frank
-//Assignment 11.1
+//Assignment 11.3
 //Creative Coding Fall 2016
-//interactive animation of squares with random variables. click to interact.
+//sound sequencer. touch the square notes to make a sound and change colors.
 var despawn;
 var instX, instY, instWidth, instHeight, instC;
 var backC;
