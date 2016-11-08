@@ -99,9 +99,6 @@ function Note(){
 			this.xPos = 0 - this.size;
 		}
 	}
-	this.explode = function(){
-		//explosion
-	}
 	this.update = function(){
 		println("test");
 		fill(this.c);
@@ -117,7 +114,6 @@ function Note(){
 		}
 		if(this.yPos <= instY + instHeight && this.yPos >= instY - this.size){
 			if(this.xPos + this.size >= instX && this.xPos <= instX + instWidth){
-				//explode();
 				sounds[this.soundsNum].play();
 				backC = instC;
 				instC = this.c;
@@ -127,26 +123,5 @@ function Note(){
 		}
 
 		return false;
-
-
-		/*
-		//old
-		if(xSpd == 0){xSpd += 1;}
-		if(ySpd == 0){ySpd += 1;}
-		if(this.xPos <= 0 || this.xPos >= width - this.size){
-			this.xSpd *= -1;
-			this.xPos += this.xSpd*5;
-			sounds[this.soundsNum].play();
-		}
-		if(this.yPos <= 0 || this.yPos >= height - this.size){
-			this.ySpd *= -1;
-			this.yPos += this.ySpd*5;
-			sounds[this.soundsNum].play();
-		}
-		this.xPos += this.xSpd;
-		this.yPos += this.ySpd;
-
-		rect(this.xPos, this.yPos, this.size, this.size);
-		*/
 	}
 };
