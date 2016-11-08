@@ -4,27 +4,28 @@
 //interactive animation of squares with random variables. click to interact.
 var despawn;
 var instX, instY, instWidth, instHeight, instC;
+var backC;
 var note1, note2, note3;
 
 var notes = [];
 var sounds = [];
 
 function preload(){
-	//sounds[0] = loadSound('assets/tear block.wav');
-	//sounds[sounds.length] = loadSound('assets/tear fire 5.wav');
-	//sounds[sounds.length] = loadSound('assets/plop.wav');
-	sounds[0] = loadSound('assets/mom.wav');
-	sounds[sounds.length] = loadSound('assets/mom2.wav');
-	sounds[sounds.length] = loadSound('assets/mom3.wav');
-	sounds[sounds.length] = loadSound('assets/mom muffle.wav');
-	sounds[sounds.length] = loadSound('assets/mom muffle 2.wav');
-	sounds[sounds.length] = loadSound('assets/mom muffle 3.wav');
-	sounds[sounds.length] = loadSound('assets/mom muffle 4.wav');
+	sounds[0] = loadSound('assets/bolt.ogg');
+	sounds[sounds.length] = loadSound('assets/bomb.ogg');
+	sounds[sounds.length] = loadSound('assets/camera.ogg');
+	sounds[sounds.length] = loadSound('assets/heart.ogg');
+	sounds[sounds.length] = loadSound('assets/lock.ogg');
+	sounds[sounds.length] = loadSound('assets/power-off.ogg');
+	sounds[sounds.length] = loadSound('assets/star.ogg');
+	sounds[sounds.length] = loadSound('assets/tree.ogg');
+	sounds[sounds.length] = loadSound('assets/unlock-alt.ogg');
 }
 
 function setup(){
 	createCanvas(1080,720);
 	noStroke();
+	backC = color(222);
 	instC = color(0,40,120);
 	despawn = 200;
 	instWidth = 30;
@@ -44,7 +45,7 @@ function setup(){
 }
 
 function draw(){
-	background(222);
+	background(backC);
 	instY = mouseY - instHeight/2;
 	fill(instC);
 	rect(instX, instY, instWidth, instHeight);
@@ -70,9 +71,9 @@ function draw(){
 
 function Note(){
 	this.constructor = function(){
-		this.spd = random(-10,10);
-		if(this.spd == 0){
-			this.spd += 1;
+		this.spd = random(-12,12);
+		if(this.spd < 1 && this.spd > -1){
+			this.spd = 1;
 		}
 		this.size = random(20, 160);
 		if(this.spd < 0){
@@ -87,9 +88,9 @@ function Note(){
 	}
 	this.adjust = function(){
 		this.yPos = random(0, height - this.size);
-		this.spd = random(-10,10);
-		if(this.spd == 0){
-			this.spd += 1;
+		this.spd = random(-12,12);
+		if(this.spd < 1 && this.spd > -1){
+			this.spd = 1;
 		}
 		if(this.spd < 0){
 			this.xPos = width;
@@ -118,6 +119,7 @@ function Note(){
 			if(this.xPos + this.size >= instX && this.xPos <= instX + instWidth){
 				//explode();
 				sounds[this.soundsNum].play();
+				backC = instC;
 				instC = this.c;
 				this.constructor();
 				return true;
