@@ -1,7 +1,6 @@
 //Julian Frank
-//Creative Coding
-//10-5-2016
-//Assignment 10.04: Rotating Geometry
+//Creative Coding Fall 2016
+//Assignment 11.10
 
 var rotAmt = 0;
 
