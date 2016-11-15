@@ -11,7 +11,6 @@ function setup() {
 }
 
 function draw() {
-	//without using a for loop
 	background(44, 62, 80);
 	push();
 	fill(50,150,89);
