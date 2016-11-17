@@ -28,6 +28,6 @@ function setup(){
 	fPerc = map(f, 0, maxVal, 0, height);
 	fill(46, 204, 113);
 	rect(width/2 - barWidth - 50, height - mPerc, barWidth, mPerc);
-	fill(155, 89, 182);
+	fill(52, 152, 219);
 	rect(width/2 + 50, height - fPerc, barWidth, fPerc);
 }
