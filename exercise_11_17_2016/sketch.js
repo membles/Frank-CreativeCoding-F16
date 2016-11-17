@@ -44,6 +44,7 @@ function Shape(hexVal, posX, posY){
 };
 */
 
+/*
 //pat 2
 var myData;
 var globalData;
@@ -67,7 +68,27 @@ function draw(){
 		//data isnt loaded yet; do something else
 	}
 }
+*/
+
+//part 3
+var baseURL, city, APIkey, url;
+
+function setup(){
+	createCanvas(600,600);
+	baseURL = "http://api.openweathermap.org/data/2.5/weather?";
+	city = "New York,ny";
+	APIkey = "3bc1861cff7eafa383ffe82135bc04fb";
+	url = baseURL + "q=" + city + "&appid=" + APIkey;
+	myData = loadJSON(url, gotData);
+}
+
+function gotData(){
+	globalData = myData;
+	console.log(globalData);
+}
 
 function mouseClicked(){
-
+	city = "Tokyo";
+	url = baseURL + "q=" + city + "&appid=" + APIkey;;
+	myData = loadJSON(url, gotData);
 }
