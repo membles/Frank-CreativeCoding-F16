@@ -9,6 +9,7 @@ var myData, globalData;
 var temp, tempMappedBlue, tempMappedRed;
 var weather;
 var raindrops = [];
+var clouds = [];
 
 function setup(){
 	noStroke;
@@ -23,8 +24,11 @@ function setup(){
 	fill(255);
 	textSize(60);
 	textFont("Arial Black");
-	for(var i = 0; i < 30; i++){
-		raindrops[i] = new rain(random(5, 12));
+	for(var i = 0; i < 50; i++){
+		raindrops[i] = new rain(random(7, 12), random(0, 500));
+	}
+	for(var i = 0; i < 25; i++){
+		clouds[i] = new cloud();
 	}
 }
 
@@ -37,8 +41,9 @@ function gotData(incomingData){
 }
 
 function draw(){
+	fill(255,255,255);
 	if(globalData){
-		console.log(globalData);
+		//console.log(globalData);
 		temp = globalData.main.temp;
 		tempMappedBlue = map(temp, 0, 100, 255, 0);
 		tempMappedRed = map(temp, 0, 100, 0, 255);
@@ -47,19 +52,32 @@ function draw(){
 
 		//weather functionality
 		weather = globalData.weather[0].main;
-		if(weather == "Rain"){
+		if(weather == "Rain" || weather == "Drizzle"){
 			for(var i = 0; i < raindrops.length; i++){
 				raindrops[i].fall();
+			}
+		}
+		else if(weather == "Snow"){
+			for(var i = 0; i < raindrops.length; i++){
+				raindrops[i].snow();
+			}
+		}
+		else if(weather == "Clouds" || weather == "Thunderstorm"){
+			for(var i = 0; i < clouds.length; i++){
+				clouds[i].float();
 			}
 		}
 	}
  }
 
- function rain(spd){
+ function rain(spd, offset){
  	this.xPos = random(0, width);
- 	this.yPos = 0;
+ 	this.yPos = 0 - offset;
  	this.spd = spd;
  	this.fall = function(){
+ 		if(this.spd < 7){
+ 			this.spd = random(7, 12);
+ 		}
  		this.yPos += this.spd;
  		if(this.yPos > height){
  			this.yPos = 0;
@@ -67,5 +85,34 @@ function draw(){
  		}
  		noStroke();
  		ellipse(this.xPos, this.yPos, 1, 5);
+ 	}
+ 	this.snow = function(){
+ 		if(this.spd >= 7){
+ 			this.spd = random(2, 6);
+ 		}
+  		this.yPos += this.spd;
+ 		if(this.yPos > height){
+ 			this.yPos = 0;
+ 			this.xPos = random(0, width);
+ 		}
+ 		noStroke();
+ 		ellipse(this.xPos, this.yPos, 5, 5);		
+ 	}
+ };
+
+ function cloud(){
+ 	this.width = 200;
+ 	this.xPos = random(-800, width);
+ 	this.yPos = random(-20, 150);
+ 	this.spd = .3;
+ 	this.float = function(){
+ 		noStroke();
+ 		fill(255,255,255,160);
+ 		this.xPos += this.spd;
+ 		if(this.xPos > width){
+ 			this.xPos = random(-800, 0 - this.width);
+ 			this.yPos = random(-20, 150);
+ 		}
+ 		rect(this.xPos, this.yPos, this.width, 50);
  	}
  };
