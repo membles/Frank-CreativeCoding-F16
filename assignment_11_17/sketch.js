@@ -7,24 +7,31 @@ var myData, globalData;
 var temp, tempMapped;
 
 function setup(){
+	noStroke;
 	createCanvas(600,600);
 	baseURL = "http://api.openweathermap.org/data/2.5/weather?";
-	city = "New York, ny";
+	city = "Newyork,ny";
 	APIkey = "3bc1861cff7eafa383ffe82135bc04fb";
 	url = baseURL + "q=" + city + "&callback=parseResponse&units=imperial&appid=" + APIkey;
-	myData = loadJSON(url, gotData);
+	loadJSON(url, gotData);
+	setInterval(loadNewData, 4000);
 }
 
-function gotData(){
-	globalData = myData;
-	console.log(globalData.parseResponse);
+function loadNewData(){
+	loadJSON(url, gotData);
+}
+
+function gotData(incomingData){
+	globalData = incomingData;
+	println("test");
 }
 
 function draw(){
-	if(frameCount % 18000 == 0){
-		myData = loadJSON(url, gotData);
+	if(globalData){
+		console.log(globalData.parseResponse);
+		//console.log("test");
+		//temp = globalData.parseResponse.main.temp;
+		//tempMapped = map(temp, 0, 100, 255, 0);
+		//background(0,0,tempMapped);
 	}
-	temp = globalData.parseResponse.main.temp;
-	tempMapped = map(temp, 0, 100, 255, 0);
-	background(0,0,tempMapped);
  }
