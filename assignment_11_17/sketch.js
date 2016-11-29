@@ -23,8 +23,8 @@ function setup(){
 	fill(255);
 	textSize(60);
 	textFont("Arial Black");
-	for(var i = 0; i < 30; i++){
-		raindrops[i] = new rain(random(5, 12));
+	for(var i = 0; i < 50; i++){
+		raindrops[i] = new rain(random(7, 12), random(0, 500));
 	}
 }
 
@@ -47,19 +47,28 @@ function draw(){
 
 		//weather functionality
 		weather = globalData.weather[0].main;
+		//weather = "Snow";
 		if(weather == "Rain"){
 			for(var i = 0; i < raindrops.length; i++){
 				raindrops[i].fall();
 			}
 		}
+		else if(weather == "Snow"){
+			for(var i = 0; i < raindrops.length; i++){
+				raindrops[i].snow();
+			}
+		}
 	}
  }
 
- function rain(spd){
+ function rain(spd, offset){
  	this.xPos = random(0, width);
- 	this.yPos = 0;
+ 	this.yPos = 0 - offset;
  	this.spd = spd;
  	this.fall = function(){
+ 		if(this.spd < 7){
+ 			this.spd = random(7, 12);
+ 		}
  		this.yPos += this.spd;
  		if(this.yPos > height){
  			this.yPos = 0;
@@ -68,4 +77,18 @@ function draw(){
  		noStroke();
  		ellipse(this.xPos, this.yPos, 1, 5);
  	}
+ 	this.snow = function(){
+ 		if(this.spd >= 7){
+ 			this.spd = random(2, 6);
+ 		}
+  		this.yPos += this.spd;
+ 		if(this.yPos > height){
+ 			this.yPos = 0;
+ 			this.xPos = random(0, width);
+ 		}
+ 		noStroke();
+ 		ellipse(this.xPos, this.yPos, 5, 5);		
+ 	}
  };
+
+ function cloud(){};
