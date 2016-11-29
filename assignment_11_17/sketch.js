@@ -2,6 +2,8 @@
 //Creative Coding Fall 2016
 //Assignment 11.17
 
+//queries for data from openweathermap.org. displays the temp for new york and visually portrays certain weather types (ie rain, etc)
+
 var baseURL, city, APIkey, url;
 var myData, globalData;
 var temp, tempMappedBlue, tempMappedRed;
