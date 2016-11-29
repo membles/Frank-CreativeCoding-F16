@@ -2,6 +2,39 @@
 //Creative Coding Fall 2016
 //Exercise 11/29/2016
 
+//part 2
+var canvas, slider, pos, input, inputButton, inputValue;
+
+function setup(){
+	fill(255);
+	canvas = createCanvas(600,600);
+	slider = createSlider(1, 300, 50);
+	slider.position(400,50);
+	pos = 0;
+	input = createInput("fruits etc");
+	input.position(400,150);
+	inputButton = createButton("Submit");
+	inputButton.position(580,150);
+	inputButton.mousePressed(readValue);
+	myInputValue = "";
+}
+
+function draw(){
+	background(20, 60, 140);
+	var mySliderValue = slider.value();
+	pos+=2;
+	if(pos > width) pos = 0;
+	pos+=2;
+	ellipse(pos, height/2, mySliderValue, mySliderValue);
+	text(myInputValue, width/2, 200);
+}
+
+function readValue(){
+	myInputValue = input.value();
+	console.log(myInputValue);
+}
+
+/* //part 1
 var canvas, pos, myImage, myPar;
 
 function setup(){
@@ -43,3 +76,4 @@ function movedOff(){
 function myAction(){
 	console.log("mouse went over the canvas");
 }
+*/
