@@ -1,5 +1,6 @@
-var keyW, keyA, keyS, keyD;
+var keyW, keyA, keyS, keyD, keyUp, keyDown, keyLeft, keyRight;
 var user;
+var projectiles = [];
 
 function setup(){
 	createCanvas(700,700);
@@ -9,6 +10,10 @@ function setup(){
 	keyA = false;
 	keyS = false;
 	keyD = false;
+	keyUp = false;
+	keyDown = false;
+	keyLeft = false;
+	keyRight = false;
 	user = new Avatar;
 	textAlign(CENTER);
 	textSize(16);
@@ -17,8 +22,15 @@ function setup(){
 
 function draw(){
 	background(200);
-	println("test");
 	user.update();
+	/*
+	for(var i = 0; i < this.projectiles.length; i++){
+		projectiles[i].update();
+	}
+	*/
+	if(projectiles.length == 1){ //for testing
+		projectiles[0].update();
+	}
 }
 
 function Avatar(){
@@ -26,7 +38,6 @@ function Avatar(){
 	this.posX = width/2;
 	this.posY = height/2;
 	this.moveSpd = 3;
-	this.projectiles = [];
 	this.projReady = true;
 	this.update = function(){
 		fill(0,55,100);
@@ -44,22 +55,41 @@ function Avatar(){
 		}
 		text(this.word, this.posX, this.posY);
 
-		if(mouseIsPressed){
-			this.projectiles[this.projectiles.length] = new Projectile('c', mouseX, mouseY);
-		}
-		for(var i = 0; i < this.projectiles.length; i++){
-			this.projectiles[i].update();
+
+		if(keyIsPressed && this.projReady){
+			this.projReady = false;
+			if(keyCode == UP_ARROW){
+				projectiles[projectiles.length] = new Projectile('c', "up");
+			}
+			if(keyCode == DOWN_ARROW){
+				keyDown = true;
+			}
+			if(keyCode == LEFT_ARROW){
+				keyLeft = true;
+			}
+			if(keyCode == RIGHT_ARROW){
+				keyRight = true;
+			}
 		}
 	}
 };
 
-function Projectile(c, destX, destY){
+function Projectile(c, dir){
 	this.c = c;
 	this.posX = user.posX;
 	this.posY = user.posY;
+	this.spdX = 0;
+	this.spdY = 0;
+	this.dir = dir;
 	this.update = function(){
+		println("test");
+		if(this.dir == "up"){
+			this.spdY = -4;
+		}
 		fill(100,15,40);
 		rect(this.posX,this.posY,5,5);
+		this.posY += this.spdY;
+		this.posX += this.posX;
 	}
 };
 
@@ -90,6 +120,18 @@ function keyReleased(){
 	}
 	if(key == 'D'){
 		keyD = false;
+	}
+	if(keyCode == UP_ARROW){
+		user.projReady = true;
+	}
+	if(keyCode == DOWN_ARROW){
+		keyDown = true;
+	}
+	if(keyCode == LEFT_ARROW){
+		keyLeft = true;
+	}
+	if(keyCode == RIGHT_ARROW){
+		keyRight = true;
 	}
 }
 
