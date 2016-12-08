@@ -23,14 +23,17 @@ function setup(){
 function draw(){
 	background(200);
 	user.update();
-	/*
-	for(var i = 0; i < this.projectiles.length; i++){
+	for(var i = 0; i < projectiles.length; i++){
 		projectiles[i].update();
+		if(i == projectiles.length - 1 && (projectiles[0].posX > width || projectiles[0].posX < 0 || projectiles[0].posY > height || projectiles[0].posY < 0)){
+			projectiles.shift();
+		}
 	}
-	*/
+	/*
 	if(projectiles.length == 1){ //for testing
 		projectiles[0].update();
 	}
+	*/
 }
 
 function Avatar(){
@@ -39,6 +42,9 @@ function Avatar(){
 	this.posY = height/2;
 	this.moveSpd = 3;
 	this.projReady = true;
+	this.projTimer = 30;
+	this.frameRef = 0;
+	this.projChar = this.word.charAt(this.word.length - 1);
 	this.update = function(){
 		fill(0,55,100);
 		if(keyW){
@@ -55,20 +61,34 @@ function Avatar(){
 		}
 		text(this.word, this.posX, this.posY);
 
-
-		if(keyIsPressed && this.projReady){
-			this.projReady = false;
+		if(this.projReady == false && frameCount == this.frameRef + this.projTimer){
+			this.projReady = true;
+		}
+		if(keyIsPressed && this.projReady && this.word.length > 1){
 			if(keyCode == UP_ARROW){
-				projectiles[projectiles.length] = new Projectile('c', "up");
+				this.projReady = false;
+				this.frameRef = frameCount;
+				projectiles[projectiles.length] = new Projectile(this.projChar, "up");
 			}
 			if(keyCode == DOWN_ARROW){
-				keyDown = true;
+				this.projReady = false;
+				this.frameRef = frameCount;
+				projectiles[projectiles.length] = new Projectile(this.projChar, "down");
 			}
 			if(keyCode == LEFT_ARROW){
-				keyLeft = true;
+				this.projReady = false;
+				this.frameRef = frameCount;
+				projectiles[projectiles.length] = new Projectile(this.projChar, "left");
 			}
 			if(keyCode == RIGHT_ARROW){
-				keyRight = true;
+				this.projReady = false;
+				this.frameRef = frameCount;
+				projectiles[projectiles.length] = new Projectile(this.projChar, "right");
+			}
+			if(!this.projReady){
+				this.word = this.word.slice(0, -1);
+				println(this.word);
+				this.projChar = this.word.charAt(this.word.length - 1);
 			}
 		}
 	}
@@ -82,14 +102,22 @@ function Projectile(c, dir){
 	this.spdY = 0;
 	this.dir = dir;
 	this.update = function(){
-		println("test");
 		if(this.dir == "up"){
-			this.spdY = -4;
+			this.spdY = -5;
 		}
-		fill(100,15,40);
-		rect(this.posX,this.posY,5,5);
+		else if(this.dir == "down"){
+			this.spdY = 5;
+		}
+		else if(this.dir == "left"){
+			this.spdX = -5;
+		}
+		else if(this.dir == "right"){
+			this.spdX = 5;
+		}
+		fill(0);
+		text(this.c,this.posX,this.posY);
 		this.posY += this.spdY;
-		this.posX += this.posX;
+		this.posX += this.spdX;
 	}
 };
 
@@ -106,6 +134,20 @@ function keyPressed(){
 	if(key == 'D'){
 		keyD = true;
 	}
+	/*
+	if(keyCode == UP_ARROW && user.projReady){
+		keyUp = true;
+	}
+	if(keyCode == DOWN_ARROW){
+		keyDown = true;
+	}
+	if(keyCode == LEFT_ARROW){
+		keyLeft = true;
+	}
+	if(keyCode == RIGHT_ARROW){
+		keyRight = true;
+	}
+	*/
 }
 
 function keyReleased(){
@@ -121,18 +163,20 @@ function keyReleased(){
 	if(key == 'D'){
 		keyD = false;
 	}
-	if(keyCode == UP_ARROW){
-		user.projReady = true;
+	/*
+	if(keyCode == UP_ARROW && user.projReady){
+		keyUp = false;
 	}
 	if(keyCode == DOWN_ARROW){
-		keyDown = true;
+		keyDown = false;
 	}
 	if(keyCode == LEFT_ARROW){
-		keyLeft = true;
+		keyLeft = false;
 	}
 	if(keyCode == RIGHT_ARROW){
-		keyRight = true;
+		keyRight = false;
 	}
+	*/
 }
 
 /*
