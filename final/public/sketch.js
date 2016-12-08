@@ -8,7 +8,7 @@ add connections and sockets in setup
 send out data in the functions that i need to
 retrieve data from server
 make use of server data to show other player movement, projectiles, etc
-*?
+*/
 
 function setup(){
 	createCanvas(700,700);
