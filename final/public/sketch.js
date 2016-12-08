@@ -2,10 +2,17 @@ var keyW, keyA, keyS, keyD, keyUp, keyDown, keyLeft, keyRight;
 var user;
 var projectiles = [];
 
+//for server
+/*
+add connections and sockets in setup
+send out data in the functions that i need to
+retrieve data from server
+make use of server data to show other player movement, projectiles, etc
+*?
+
 function setup(){
 	createCanvas(700,700);
 	background(200);
-	//socket = io.connect("http://localhost:7000");
 	keyW = false;
 	keyA = false;
 	keyS = false;
@@ -17,6 +24,7 @@ function setup(){
 	user = new Avatar;
 	textAlign(CENTER);
 	textSize(16);
+	//socket = io.connect("http://localhost:7000");
 	//socket.on('mouse', makeDrawing);
 }
 
