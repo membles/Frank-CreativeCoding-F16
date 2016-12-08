@@ -29,11 +29,6 @@ function draw(){
 			projectiles.shift();
 		}
 	}
-	/*
-	if(projectiles.length == 1){ //for testing
-		projectiles[0].update();
-	}
-	*/
 }
 
 function Avatar(){
@@ -64,31 +59,33 @@ function Avatar(){
 		if(this.projReady == false && frameCount == this.frameRef + this.projTimer){
 			this.projReady = true;
 		}
-		if(keyIsPressed && this.projReady && this.word.length > 1){
-			if(keyCode == UP_ARROW){
-				this.projReady = false;
-				this.frameRef = frameCount;
-				projectiles[projectiles.length] = new Projectile(this.projChar, "up");
-			}
-			if(keyCode == DOWN_ARROW){
-				this.projReady = false;
-				this.frameRef = frameCount;
-				projectiles[projectiles.length] = new Projectile(this.projChar, "down");
-			}
-			if(keyCode == LEFT_ARROW){
-				this.projReady = false;
-				this.frameRef = frameCount;
-				projectiles[projectiles.length] = new Projectile(this.projChar, "left");
-			}
-			if(keyCode == RIGHT_ARROW){
-				this.projReady = false;
-				this.frameRef = frameCount;
-				projectiles[projectiles.length] = new Projectile(this.projChar, "right");
-			}
-			if(!this.projReady){
-				this.word = this.word.slice(0, -1);
-				println(this.word);
-				this.projChar = this.word.charAt(this.word.length - 1);
+		if(this.projReady && this.word.length > 1){
+			if(keyIsPressed){
+				if(keyCode == UP_ARROW){
+					this.projReady = false;
+					this.frameRef = frameCount;
+					projectiles[projectiles.length] = new Projectile(this.projChar, "up");
+				}
+				if(keyCode == DOWN_ARROW){
+					this.projReady = false;
+					this.frameRef = frameCount;
+					projectiles[projectiles.length] = new Projectile(this.projChar, "down");
+				}
+				if(keyCode == LEFT_ARROW){
+					this.projReady = false;
+					this.frameRef = frameCount;
+					projectiles[projectiles.length] = new Projectile(this.projChar, "left");
+				}
+				if(keyCode == RIGHT_ARROW){
+					this.projReady = false;
+					this.frameRef = frameCount;
+					projectiles[projectiles.length] = new Projectile(this.projChar, "right");
+				}
+				if(!this.projReady){
+					this.word = this.word.slice(0, -1);
+					println(this.word);
+					this.projChar = this.word.charAt(this.word.length - 1);
+				}
 			}
 		}
 	}
@@ -114,7 +111,7 @@ function Projectile(c, dir){
 		else if(this.dir == "right"){
 			this.spdX = 5;
 		}
-		fill(0);
+		//fill(0);
 		text(this.c,this.posX,this.posY);
 		this.posY += this.spdY;
 		this.posX += this.spdX;
@@ -178,28 +175,3 @@ function keyReleased(){
 	}
 	*/
 }
-
-/*
-function mouseClicked(){
-	var myData = {
-		x:mouseX,
-		y:mouseY
-	}
-
-	socket.emit('mouse', myData);
-
-	fill(140,10,30);
-	rect(mouseX, mouseY, 40,40);
-}
-
-function mouseDragged(){
-	var data = {
-		x:mouseX,
-		y:mouseY
-	}
-}
-
-function draw(){
-
-}
-*/
