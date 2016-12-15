@@ -26,9 +26,15 @@ function newConnection(socket){
 	//console.log(socket.id);
 
 	socket.on('avatar', userData);
+	socket.on('projectile', projData);
 
 	function userData(data){
-		console.log(data);
+		//console.log(data);
 		socket.broadcast.emit('avatar', data);
+	}
+
+	function projData(data){
+		console.log(data);
+		socket.broadcast.emit('projectile', data);
 	}
 }

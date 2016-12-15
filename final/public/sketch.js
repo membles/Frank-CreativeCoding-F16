@@ -2,6 +2,8 @@ var keyW, keyA, keyS, keyD, keyUp, keyDown, keyLeft, keyRight;
 var user;
 var projectiles = [];
 var userDate, projData;
+var fontSize = 16;
+var avatarWidth, avatarHeight;
 
 //for server
 /*
@@ -24,9 +26,12 @@ function setup(){
 	keyRight = false;
 	user = new Avatar;
 	textAlign(CENTER);
-	textSize(16);
+	textSize(fontSize);
+	avatarWidth = textWidth(user.word);
+	avatarHeight = fontSize;
 	socket = io.connect("http://localhost:7000");
 	socket.on('avatar', updateUsers);
+	socket.on('projectile', updateProj);
 }
 
 function draw(){
@@ -43,12 +48,41 @@ function draw(){
 			projectiles.shift();
 		}
 	}
+	projData = {
+		projArray:projectiles
+	}
+	socket.emit('projectile', projData);
 }
 
 function updateUsers(data){
 	background(200);
 	fill(0,55,100);
 	text(data.word, data.posX, data.posY);
+	var otherUserWidth = textWidth(data.word);
+	for(var i = 0; i < projectiles.length; i++){
+		var projWidth = textWidth(projectiles[i].c);
+		var projHeight = fontSize;
+		if(projectiles[i].posX + projWidth/2 > data.posX - otherUserWidth/2 && projectiles[i].posX - projWidth/2 < data.posX + otherUserWidth/2){
+			if(projectiles[i].posY + projHeight/2 > data.posY - avatarHeight/2 && projectiles[i].posY - projHeight/2 < data.posY + avatarHeight/2){
+				projectiles[i].posX = -1000;
+				projectiles[i].posY = -1000;
+			}
+		}
+	}
+}
+
+function updateProj(data){
+	fill(0,55,100);
+	for(var i = 0; i < data.projArray.length; i++){
+		text(data.projArray[i].c, data.projArray[i].posX, data.projArray[i].posY);
+		var projWidth = textWidth(data.projArray[i].c);
+		var projHeight = fontSize;
+		if(data.projArray[i].posX + projWidth/2 > user.posX - avatarWidth/2 && data.projArray[i].posX - projWidth/2 < user.posX + avatarWidth/2){
+			if(data.projArray[i].posY + projHeight/2 > user.posY - avatarHeight/2 && data.projArray[i].posY - projHeight/2 < user.posY + avatarHeight/2){
+				user.addChar(data.projArray[i].c);
+			}
+		}
+	}
 }
 
 function Avatar(){
@@ -108,6 +142,10 @@ function Avatar(){
 				}
 			}
 		}
+	}
+	this.addChar = function(newChar){
+		this.word += newChar;
+		//console.log("test");
 	}
 };
 
