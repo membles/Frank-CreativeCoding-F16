@@ -1,6 +1,7 @@
 var keyW, keyA, keyS, keyD, keyUp, keyDown, keyLeft, keyRight;
 var user;
 var projectiles = [];
+var userDate, projData;
 
 //for server
 /*
@@ -24,19 +25,30 @@ function setup(){
 	user = new Avatar;
 	textAlign(CENTER);
 	textSize(16);
-	//socket = io.connect("http://localhost:7000");
-	//socket.on('mouse', makeDrawing);
+	socket = io.connect("http://localhost:7000");
+	socket.on('avatar', updateUsers);
 }
 
 function draw(){
-	background(200);
 	user.update();
+	userData = {
+		posX:user.posX,
+		posY:user.posY,
+		word:user.word
+	}
+	socket.emit('avatar', userData);
 	for(var i = 0; i < projectiles.length; i++){
 		projectiles[i].update();
 		if(i == projectiles.length - 1 && (projectiles[0].posX > width || projectiles[0].posX < 0 || projectiles[0].posY > height || projectiles[0].posY < 0)){
 			projectiles.shift();
 		}
 	}
+}
+
+function updateUsers(data){
+	background(200);
+	fill(0,55,100);
+	text(data.word, data.posX, data.posY);
 }
 
 function Avatar(){

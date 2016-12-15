@@ -25,10 +25,10 @@ io.sockets.on('connection', newConnection);
 function newConnection(socket){
 	//console.log(socket.id);
 
-	socket.on('mouse', mouseMessage);
+	socket.on('avatar', userData);
 
-	function mouseMessage(data){
+	function userData(data){
 		console.log(data);
-		socket.broadcast.emit('mouse', data);
+		socket.broadcast.emit('avatar', data);
 	}
 }
