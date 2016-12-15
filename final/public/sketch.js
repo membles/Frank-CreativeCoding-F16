@@ -45,7 +45,6 @@ function setup(){
 function draw(){
 	if(bgUpdate){
 		background(bgColor);
-		console.log("draw");
 		bgUpdate = false;
 	}
 	user.update();
@@ -73,7 +72,6 @@ function updateUsers(data){
 	if(bgUpdate){
 		background(bgColor);
 		bgUpdate = false;
-		console.log("update");
 	}
 	fill(otherUserColor);
 	text(data.word, data.posX, data.posY);
