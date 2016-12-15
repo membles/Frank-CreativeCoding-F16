@@ -24,7 +24,7 @@ io.sockets.on('connection', newConnection);
 //which will be the argument to the resulting function
 function newConnection(socket){
 	//console.log(socket.id);
-
+	
 	socket.on('avatar', userData);
 	socket.on('projectile', projData);
 

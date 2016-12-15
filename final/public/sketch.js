@@ -7,11 +7,10 @@ var avatarWidth, avatarHeight;
 var input;
 var userColor;
 var otherUserColor;
+var bgUpdate;
 
 //to do
 /*
-input detection to make sure it is one word and within size limit
-color
 polish stuff
 -word grows and shinkins mario style when you hit space?
 
@@ -24,6 +23,8 @@ function setup(){
 	background(236, 240, 241);
 	userColor = color(41, 128, 185);
 	otherUserColor = color(192, 57, 43);
+	bgColor = color(236, 240, 241);
+	bgUpdate = true;
 	keyW = false;
 	keyA = false;
 	keyS = false;
@@ -32,7 +33,14 @@ function setup(){
 	keyDown = false;
 	keyLeft = false;
 	keyRight = false;
-	input = prompt("Enter a word", "word");
+	input = prompt("Enter a word between 1 and 12 characters long", "word");
+	while(true){
+		if(input.length <= 12 && input.length >= 1){
+			break;
+		}
+		input = prompt("Enter a word between 1 and 12 characters long\n Your word was too long or too short", "word");
+	}
+	//input = prompt("Enter a word", "word");
 	user = new Avatar(input);
 	textAlign(CENTER);
 	textSize(fontSize);
@@ -45,6 +53,11 @@ function setup(){
 }
 
 function draw(){
+	if(bgUpdate){
+		background(bgColor);
+		console.log("draw");
+		bgUpdate = false;
+	}
 	user.update();
 	userData = {
 		posX:user.posX,
@@ -63,10 +76,15 @@ function draw(){
 	}
 	avatarWidth = textWidth(user.word);
 	socket.emit('projectile', projData);
+	bgUpdate = true;
 }
 
 function updateUsers(data){
-	background(236, 240, 241);
+	if(bgUpdate){
+		background(bgColor);
+		bgUpdate = false;
+		console.log("update");
+	}
 	fill(otherUserColor);
 	text(data.word, data.posX, data.posY);
 	var otherUserWidth = textWidth(data.word);
@@ -92,6 +110,7 @@ function updateProj(data){
 		if(data.projArray[i].posX + projWidth/2 > user.posX - avatarWidth/2 && data.projArray[i].posX - projWidth/2 < user.posX + avatarWidth/2){
 			if(data.projArray[i].posY + projHeight/2 > user.posY - avatarHeight/2 && data.projArray[i].posY - projHeight/2 < user.posY + avatarHeight/2){
 				user.addChar(data.projArray[i].c);
+				data.projArray[i].c = null;
 			}
 		}
 	}
