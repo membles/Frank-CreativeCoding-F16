@@ -9,15 +9,6 @@ var userColor;
 var otherUserColor;
 var bgUpdate;
 
-//to do
-/*
-polish stuff
--word grows and shinkins mario style when you hit space?
-
-bug:
-if no other users connected then background does not update
-*/
-
 function setup(){
 	createCanvas(700,700);
 	background(236, 240, 241);
@@ -40,7 +31,6 @@ function setup(){
 		}
 		input = prompt("Enter a word between 1 and 12 characters long\n Your word was too long or too short", "word");
 	}
-	//input = prompt("Enter a word", "word");
 	user = new Avatar(input);
 	textAlign(CENTER);
 	textSize(fontSize);
@@ -176,7 +166,6 @@ function Avatar(word){
 	}
 	this.addChar = function(newChar){
 		this.word += newChar;
-		//console.log("test");
 	}
 };
 
@@ -220,20 +209,6 @@ function keyPressed(){
 	if(key == 'D'){
 		keyD = true;
 	}
-	/*
-	if(keyCode == UP_ARROW && user.projReady){
-		keyUp = true;
-	}
-	if(keyCode == DOWN_ARROW){
-		keyDown = true;
-	}
-	if(keyCode == LEFT_ARROW){
-		keyLeft = true;
-	}
-	if(keyCode == RIGHT_ARROW){
-		keyRight = true;
-	}
-	*/
 }
 
 function keyReleased(){
@@ -249,18 +224,4 @@ function keyReleased(){
 	if(key == 'D'){
 		keyD = false;
 	}
-	/*
-	if(keyCode == UP_ARROW && user.projReady){
-		keyUp = false;
-	}
-	if(keyCode == DOWN_ARROW){
-		keyDown = false;
-	}
-	if(keyCode == LEFT_ARROW){
-		keyLeft = false;
-	}
-	if(keyCode == RIGHT_ARROW){
-		keyRight = false;
-	}
-	*/
 }
