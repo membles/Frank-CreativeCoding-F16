@@ -4,18 +4,26 @@ var projectiles = [];
 var userDate, projData;
 var fontSize = 16;
 var avatarWidth, avatarHeight;
+var input;
+var userColor;
+var otherUserColor;
 
-//for server
+//to do
 /*
-add connections and sockets in setup
-send out data in the functions that i need to
-retrieve data from server
-make use of server data to show other player movement, projectiles, etc
+input detection to make sure it is one word and within size limit
+color
+polish stuff
+-word grows and shinkins mario style when you hit space?
+
+bug:
+if no other users connected then background does not update
 */
 
 function setup(){
 	createCanvas(700,700);
-	background(200);
+	background(236, 240, 241);
+	userColor = color(41, 128, 185);
+	otherUserColor = color(192, 57, 43);
 	keyW = false;
 	keyA = false;
 	keyS = false;
@@ -24,9 +32,11 @@ function setup(){
 	keyDown = false;
 	keyLeft = false;
 	keyRight = false;
-	user = new Avatar;
+	input = prompt("Enter a word", "word");
+	user = new Avatar(input);
 	textAlign(CENTER);
 	textSize(fontSize);
+	textFont("Montserrat");
 	avatarWidth = textWidth(user.word);
 	avatarHeight = fontSize;
 	socket = io.connect("http://localhost:7000");
@@ -51,12 +61,13 @@ function draw(){
 	projData = {
 		projArray:projectiles
 	}
+	avatarWidth = textWidth(user.word);
 	socket.emit('projectile', projData);
 }
 
 function updateUsers(data){
-	background(200);
-	fill(0,55,100);
+	background(236, 240, 241);
+	fill(otherUserColor);
 	text(data.word, data.posX, data.posY);
 	var otherUserWidth = textWidth(data.word);
 	for(var i = 0; i < projectiles.length; i++){
@@ -72,11 +83,12 @@ function updateUsers(data){
 }
 
 function updateProj(data){
-	fill(0,55,100);
+	fill(otherUserColor);
 	for(var i = 0; i < data.projArray.length; i++){
 		text(data.projArray[i].c, data.projArray[i].posX, data.projArray[i].posY);
 		var projWidth = textWidth(data.projArray[i].c);
 		var projHeight = fontSize;
+		avatarWidth = textWidth(user.word);
 		if(data.projArray[i].posX + projWidth/2 > user.posX - avatarWidth/2 && data.projArray[i].posX - projWidth/2 < user.posX + avatarWidth/2){
 			if(data.projArray[i].posY + projHeight/2 > user.posY - avatarHeight/2 && data.projArray[i].posY - projHeight/2 < user.posY + avatarHeight/2){
 				user.addChar(data.projArray[i].c);
@@ -85,8 +97,8 @@ function updateProj(data){
 	}
 }
 
-function Avatar(){
-	this.word = 'string';
+function Avatar(word){
+	this.word = word;
 	this.posX = width/2;
 	this.posY = height/2;
 	this.moveSpd = 3;
@@ -95,7 +107,7 @@ function Avatar(){
 	this.frameRef = 0;
 	this.projChar = this.word.charAt(this.word.length - 1);
 	this.update = function(){
-		fill(0,55,100);
+		fill(userColor);
 		if(keyW){
 			this.posY -= this.moveSpd;
 		}
@@ -169,7 +181,7 @@ function Projectile(c, dir){
 		else if(this.dir == "right"){
 			this.spdX = 5;
 		}
-		//fill(0);
+		fill(userColor);
 		text(this.c,this.posX,this.posY);
 		this.posY += this.spdY;
 		this.posX += this.spdX;
