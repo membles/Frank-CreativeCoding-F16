@@ -128,7 +128,7 @@ function Avatar(word){
 			this.posX += this.moveSpd;
 		}
 		text(this.word, this.posX, this.posY);
-
+		this.projChar = this.word.charAt(this.word.length - 1);
 		if(this.projReady == false && frameCount == this.frameRef + this.projTimer){
 			this.projReady = true;
 		}
